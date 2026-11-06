@@ -10,6 +10,7 @@ window.SWS_INBOX = { build: function (qThis) {
      embedded data, which messages were triaged, opened, in what order, and
      for how long. v1.1.0: Flag and Forward removed (ib_ctrl_flag / ib_ctrl_fwd
      stay in the data, always empty); shorter emails; first names in E2.
+     v1.2.0: emails cut further (briefing = story only; thread forwards headline only).
 
      Condition comes from embedded data set in the Survey Flow randomizer:
        Salience = Low  -> the controversy appears only as line 4 of the ESG
@@ -66,13 +67,13 @@ window.SWS_INBOX = { build: function (qThis) {
 
   /* ---------- 2. Stimulus text (edit wording here) ---------- */
   // The misconduct facts, source, and Kaldera's response are identical wherever they appear.
-  var FACTS = "A report released Friday by the non-profit Labor Rights Monitor says migrant workers at Kaldera Precision's plant in Penang, Malaysia, often worked more than 70 hours a week and paid months of wages in recruitment fees to get their jobs.";
+  var FACTS = "Migrant workers at Kaldera Precision's plant in Penang, Malaysia, often worked more than 70 hours a week and paid months of wages in fees to get hired, a report by the non-profit Labor Rights Monitor says.";
   var EXPO = (expo === "Named")
     ? "The report lists Orvane among the appliance brands whose motors are made at the plant."
     : "The report does not identify the plant's customers.";
   var RESP = "Kaldera said in a statement that it is reviewing the findings.";
   var HEADLINE = "Workers at Malaysian motor maker Kaldera say they worked 70-hour weeks and paid months of wages to get hired";
-  var AMPLIFY = "It is the most-read business story in the country this morning and is being shared widely.";
+  var AMPLIFY = "It is the most-read business story in the country today.";
 
   var ME = "Me (Category Manager, Motors &amp; Drives)";
 
@@ -93,10 +94,7 @@ window.SWS_INBOX = { build: function (qThis) {
 
   var E1body = "<p class='ibx-muted'>THE NATIONAL COURIER &middot; MORNING BRIEFING &middot; Monday</p>" +
     (HIGH ? kalderaArticleTop : fedArticleTop) +
-    "<p style='margin-top:12px'><b>Also today</b></p><ul>" +
-    (HIGH ? "<li>Fed officials signal interest rates will hold through year end.</li>" : "<li>Oil prices edge lower on higher inventories.</li>") +
-    "<li>Retail sales beat forecasts for a second month.</li></ul>" +
-    "<p class='ibx-muted'>You are receiving this briefing because you subscribed at nationalcourier.example.</p>";
+    "";
 
   var fwdHdr = function (subj) {
     return "<div class='ibx-fwdhdr'>---------- Forwarded message ----------<br>From: The National Courier &lt;news@nationalcourier.example&gt;<br>Subject: " + subj + "</div>";
@@ -104,9 +102,7 @@ window.SWS_INBOX = { build: function (qThis) {
   var E2body = HIGH
     ? threadMsg("Jen", "Buyer, Electronics", "8:31 AM", "<p>It's on every channel this morning.</p>") +
       threadMsg("Marcus", "Packaging", "8:19 AM", "<p>Saw it on TV too. It's everywhere.</p>") +
-      threadMsg("Dana", "Buyer, Motors &amp; Drives", "7:52 AM", "<p>Have you seen this? It's trending everywhere.</p>" + fwdHdr(HEADLINE) +
-        article("THE NATIONAL COURIER &middot; BUSINESS &middot; <span class='ibx-trend'>TRENDING #1</span>", HEADLINE,
-                "Updated 7:05 a.m. &middot; Most read today", [FACTS, EXPO, RESP, AMPLIFY]))
+      threadMsg("Dana", "Buyer, Motors &amp; Drives", "7:52 AM", "<p>Have you seen this? It's trending everywhere.</p>" + fwdHdr(HEADLINE))
     : threadMsg("Jen", "Buyer, Electronics", "8:31 AM", "<p>Good news for once.</p>") +
       threadMsg("Marcus", "Packaging", "8:19 AM", "<p>Worth raising with our forwarders.</p>") +
       threadMsg("Dana", "Buyer, Motors &amp; Drives", "7:52 AM", "<p>FYI, might help the savings plan.</p>" + fwdHdr("Ocean freight rates from Asia expected to ease") +
@@ -127,14 +123,12 @@ window.SWS_INBOX = { build: function (qThis) {
       body: E2body },
     { id: "E3", from: "Priya Nair", addr: "p.nair@orvane-appliances.example", time: "8:12 AM",
       subject: "Delayed shipment: OK to pay for air freight?",
-      preview: "Our blender housings from Tenzo Plastics are stuck at port\u2026",
-      body: "<p>Hi,</p><p>Our blender housings from Tenzo Plastics are stuck at port and will arrive 5 days late. That could stop the blender line next week.</p>" +
-            "<p>Tenzo can send the parts by air for <b>$8,400</b>. Can you let me know by noon if I should book it?</p><p>Thanks,<br>Priya Nair<br>Inbound Logistics</p>" },
+      preview: "Our blender parts from Tenzo Plastics are stuck at port\u2026",
+      body: "<p>Hi,</p><p>Our blender parts from Tenzo Plastics are stuck at port and will be 5 days late. Air freight would cost <b>$8,400</b>. OK to book it? I need to know by noon.</p><p>Thanks,<br>Priya</p>" },
     { id: "E4", from: "SupplierWatch ESG Monitoring", addr: "digest@supplierwatch.example", time: "7:30 AM",
       subject: "Weekly Supplier ESG Digest (5 updates)",
       preview: "1. Tenzo Plastics: climate score lowered slightly. 2. Brightwell Wire & Cable\u2026",
       body: "<p class='ibx-muted'>SupplierWatch ESG Monitoring &middot; Weekly digest for <b>Orvane Appliances</b></p>" +
-            "<p>This week there are <b>5 updates</b> for your suppliers.</p>" +
             "<table><tr><th>#</th><th>Supplier</th><th>Topic</th><th>Update</th></tr>" +
             "<tr><td>1</td><td>Tenzo Plastics (Malaysia)</td><td>Environment</td><td>Climate score lowered slightly.</td></tr>" +
             "<tr><td>2</td><td>Brightwell Wire &amp; Cable (Mexico)</td><td>Environment</td><td>New environmental certification for its Monterrey site.</td></tr>" +
@@ -143,11 +137,9 @@ window.SWS_INBOX = { build: function (qThis) {
             "<tr><td>5</td><td>Sunfield Packaging (USA)</td><td>Governance</td><td>Conflict-minerals report submitted.</td></tr></table>" },
     { id: "E5", from: "Key Account Manager (Kaldera Precision)", addr: "account.manager@kalderaprecision.example", time: "7:14 AM",
       subject: "Contract renewal: proposed terms",
-      preview: "Our current supply agreement ends on December 31\u2026",
-      body: "<p>Dear Category Manager,</p><p>Our current supply agreement ends on December 31. Here are our proposed terms for a two-year renewal of the KD-700 motor assembly:</p>" +
-            "<ul><li>Price held flat at <b>$38.40</b> per unit</li><li>Same lead time and payment terms as today</li></ul>" +
-            "<p>We value our eight-year partnership with Orvane and look forward to your reply.</p>" +
-            "<p>Best regards,<br>Key Account Manager<br>Kaldera Precision</p>" }
+      preview: "Our KD-700 agreement ends December 31\u2026",
+      body: "<p>Dear Category Manager,</p><p>Our KD-700 agreement ends December 31. We propose a two-year renewal with the price held flat at <b>$38.40</b> per unit. We value our eight-year partnership.</p>" +
+            "<p>Best regards,<br>Kaldera Precision</p>" }
   ];
   var FORWARD_TO = ["My manager (Ellen Park)", "Sustainability team", "Legal & Compliance", "Supplier Quality (Sofia Martins)", "Inbound Logistics (Priya Nair)"];
   var TRIAGE = ["", "Act today", "This week", "No action"];   // codes 1, 2, 3
