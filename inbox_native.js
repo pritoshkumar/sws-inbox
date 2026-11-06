@@ -7,8 +7,9 @@ window.SWS_INBOX = { build: function (qThis) {
      Inbox process-tracing task (Scandal Without Sanction, Option 1)
 
      Draws a simulated email inbox inside this question and records, in
-     embedded data, which messages were triaged, opened, in what order, for
-     how long, and whether they were flagged or forwarded.
+     embedded data, which messages were triaged, opened, in what order, and
+     for how long. v1.1.0: Flag and Forward removed (ib_ctrl_flag / ib_ctrl_fwd
+     stay in the data, always empty); shorter emails; first names in E2.
 
      Condition comes from embedded data set in the Survey Flow randomizer:
        Salience = Low  -> the controversy appears only as line 4 of the ESG
@@ -65,13 +66,13 @@ window.SWS_INBOX = { build: function (qThis) {
 
   /* ---------- 2. Stimulus text (edit wording here) ---------- */
   // The misconduct facts, source, and Kaldera's response are identical wherever they appear.
-  var FACTS = "A report published on Friday by the non-profit Labor Rights Monitor alleges that migrant workers at Kaldera Precision's motor plant in Penang, Malaysia, routinely worked more than 70 hours a week during peak season and paid recruitment fees equal to up to four months' wages to secure their jobs.";
+  var FACTS = "A report released Friday by the non-profit Labor Rights Monitor says migrant workers at Kaldera Precision's plant in Penang, Malaysia, often worked more than 70 hours a week and paid months of wages in recruitment fees to get their jobs.";
   var EXPO = (expo === "Named")
     ? "The report lists Orvane among the appliance brands whose motors are made at the plant."
     : "The report does not identify the plant's customers.";
   var RESP = "Kaldera said in a statement that it is reviewing the findings.";
   var HEADLINE = "Workers at Malaysian motor maker Kaldera say they worked 70-hour weeks and paid months of wages to get hired";
-  var AMPLIFY = "The story is the most-read business article in the country this morning and has been shared widely on social media and picked up by national broadcasters.";
+  var AMPLIFY = "It is the most-read business story in the country this morning and is being shared widely.";
 
   var ME = "Me (Category Manager, Motors &amp; Drives)";
 
@@ -85,7 +86,7 @@ window.SWS_INBOX = { build: function (qThis) {
   }
 
   var kalderaArticleTop = article("TOP STORY &middot; <span class='ibx-trend'>TRENDING #1</span>", HEADLINE,
-    "Updated 7:05 a.m. &middot; 2.1 million readers", [FACTS, EXPO, RESP, AMPLIFY]);
+    "Updated 7:05 a.m. &middot; Most read today", [FACTS, EXPO, RESP, AMPLIFY]);
   var fedArticleTop = article("TOP STORY", "Fed officials signal interest rates will hold through year end",
     "Updated 7:05 a.m.", ["Several Federal Reserve officials said over the weekend that they expect to keep interest rates unchanged for the rest of the year, citing steady inflation and a resilient job market.",
                           "Markets had priced in one more cut before December. Analysts said borrowing costs for businesses are likely to stay near current levels into next year."]);
@@ -101,53 +102,51 @@ window.SWS_INBOX = { build: function (qThis) {
     return "<div class='ibx-fwdhdr'>---------- Forwarded message ----------<br>From: The National Courier &lt;news@nationalcourier.example&gt;<br>Subject: " + subj + "</div>";
   };
   var E2body = HIGH
-    ? threadMsg("Jen Alvarez", "Senior Buyer, Electronics", "8:31 AM", "<p>It's on every channel this morning. My phone keeps buzzing with news alerts about it.</p>") +
-      threadMsg("Marcus Reid", "Category Manager, Packaging", "8:19 AM", "<p>Saw it on the TV at the gym. It's the top story on every site I checked.</p>") +
-      threadMsg("Dana Kowalski", "Senior Buyer, Motors &amp; Drives", "7:52 AM", "<p>Have you seen this? It's trending everywhere this morning.</p>" + fwdHdr(HEADLINE) +
+    ? threadMsg("Jen", "Buyer, Electronics", "8:31 AM", "<p>It's on every channel this morning.</p>") +
+      threadMsg("Marcus", "Packaging", "8:19 AM", "<p>Saw it on TV too. It's everywhere.</p>") +
+      threadMsg("Dana", "Buyer, Motors &amp; Drives", "7:52 AM", "<p>Have you seen this? It's trending everywhere.</p>" + fwdHdr(HEADLINE) +
         article("THE NATIONAL COURIER &middot; BUSINESS &middot; <span class='ibx-trend'>TRENDING #1</span>", HEADLINE,
-                "Updated 7:05 a.m. &middot; 2.1 million readers", [FACTS, EXPO, RESP, AMPLIFY]))
-    : threadMsg("Jen Alvarez", "Senior Buyer, Electronics", "8:31 AM", "<p>Good news for once. Might help my Q4 number too.</p>") +
-      threadMsg("Marcus Reid", "Category Manager, Packaging", "8:19 AM", "<p>Worth raising with our forwarders before the contracts renew.</p>") +
-      threadMsg("Dana Kowalski", "Senior Buyer, Motors &amp; Drives", "7:52 AM", "<p>FYI &mdash; might be useful for the Q4 savings plan.</p>" + fwdHdr("Ocean freight rates on Asia&ndash;U.S. routes expected to ease in Q4") +
-        article("THE NATIONAL COURIER &middot; BUSINESS", "Ocean freight rates on Asia&ndash;U.S. routes expected to ease in Q4", "Updated 6:40 a.m.",
-                ["Container rates from Southeast Asia to U.S. ports are expected to fall 8&ndash;12% in the fourth quarter as new vessel capacity enters service, according to several freight analysts.",
-                 "Shippers with contracts up for renewal may be able to negotiate lower rates, analysts said, although port congestion in Malaysia and Singapore could offset some of the savings."]));
+                "Updated 7:05 a.m. &middot; Most read today", [FACTS, EXPO, RESP, AMPLIFY]))
+    : threadMsg("Jen", "Buyer, Electronics", "8:31 AM", "<p>Good news for once.</p>") +
+      threadMsg("Marcus", "Packaging", "8:19 AM", "<p>Worth raising with our forwarders.</p>") +
+      threadMsg("Dana", "Buyer, Motors &amp; Drives", "7:52 AM", "<p>FYI, might help the savings plan.</p>" + fwdHdr("Ocean freight rates from Asia expected to ease") +
+        article("THE NATIONAL COURIER &middot; BUSINESS", "Ocean freight rates from Asia expected to ease", "Updated 6:40 a.m.",
+                ["Container rates from Southeast Asia to U.S. ports are expected to fall later this year as new ships enter service, analysts said."]));
 
   var EMAILS = [
     { id: "E1", from: "The National Courier", addr: "briefing@nationalcourier.example", time: "8:43 AM",
       subject: HIGH ? "Morning Briefing: Kaldera workers say they worked 70-hour weeks and paid months of wages to get hired"
                     : "Morning Briefing: Fed officials signal interest rates will hold through year end",
-      preview: HIGH ? "TOP STORY \u00b7 TRENDING #1 \u2014 Workers at Malaysian motor maker Kaldera Precision say\u2026"
-                    : "TOP STORY \u2014 Several Federal Reserve officials said over the weekend\u2026",
+      preview: HIGH ? "TOP STORY \u00b7 TRENDING #1: Workers at Malaysian motor maker Kaldera Precision say\u2026"
+                    : "TOP STORY: Several Federal Reserve officials said over the weekend\u2026",
       body: E1body },
-    { id: "E2", from: "Jen Alvarez, Marcus Reid, Dana Kowalski", count: 3, time: "8:31 AM",
-      subject: HIGH ? "RE: FW: Kaldera labor story is the #1 trending news today" : "RE: FW: Freight rates expected to ease in Q4",
-      preview: HIGH ? "Jen Alvarez: It's on every channel this morning. My phone keeps buzzing with news alerts about it\u2026"
-                    : "Jen Alvarez: Good news for once. Might help my Q4 number too\u2026",
+    { id: "E2", from: "Jen, Marcus, Dana", count: 3, time: "8:31 AM",
+      subject: HIGH ? "RE: FW: Kaldera labor story is trending" : "RE: FW: Freight rates expected to ease",
+      preview: HIGH ? "Jen: It's on every channel this morning\u2026"
+                    : "Jen: Good news for once\u2026",
       body: E2body },
     { id: "E3", from: "Priya Nair", addr: "p.nair@orvane-appliances.example", time: "8:12 AM",
-      subject: "Tenzo housings PO delayed 5 days \u2014 approve air freight?",
-      preview: "The vessel carrying PO 4471-883 (R-200 blender housings) is held at port\u2026",
-      body: "<p>Hi,</p><p>The vessel carrying PO 4471-883 (R-200 blender housings from Tenzo Plastics) is held at port because of congestion. The new ETA is 5 days late, which puts the R-200 line at risk of stopping next Thursday.</p>" +
-            "<p>Tenzo can air-freight 6,000 units to cover the gap for <b>$8,400</b>. Could you let me know by noon whether to book it?</p><p>Thanks,<br>Priya Nair<br>Inbound Logistics</p>" },
+      subject: "Delayed shipment: OK to pay for air freight?",
+      preview: "Our blender housings from Tenzo Plastics are stuck at port\u2026",
+      body: "<p>Hi,</p><p>Our blender housings from Tenzo Plastics are stuck at port and will arrive 5 days late. That could stop the blender line next week.</p>" +
+            "<p>Tenzo can send the parts by air for <b>$8,400</b>. Can you let me know by noon if I should book it?</p><p>Thanks,<br>Priya Nair<br>Inbound Logistics</p>" },
     { id: "E4", from: "SupplierWatch ESG Monitoring", addr: "digest@supplierwatch.example", time: "7:30 AM",
-      subject: "Weekly Supplier ESG Digest \u2014 Week 38 (5 updates)",
-      preview: "1. Tenzo Plastics \u2014 CDP climate score revised from B to B\u2212. 2. Brightwell Wire & Cable\u2026",
-      body: "<p class='ibx-muted'>SupplierWatch ESG Monitoring &middot; Weekly digest for <b>Orvane Appliances</b> &middot; Week 38 &middot; 142 suppliers monitored</p>" +
-            "<p>This week there are <b>5 updates</b> for suppliers in your monitored portfolio.</p>" +
+      subject: "Weekly Supplier ESG Digest (5 updates)",
+      preview: "1. Tenzo Plastics: climate score lowered slightly. 2. Brightwell Wire & Cable\u2026",
+      body: "<p class='ibx-muted'>SupplierWatch ESG Monitoring &middot; Weekly digest for <b>Orvane Appliances</b></p>" +
+            "<p>This week there are <b>5 updates</b> for your suppliers.</p>" +
             "<table><tr><th>#</th><th>Supplier</th><th>Topic</th><th>Update</th></tr>" +
-            "<tr><td>1</td><td>Tenzo Plastics (Malaysia)</td><td>Environment</td><td>CDP climate score revised from B to B&minus;.</td></tr>" +
-            "<tr><td>2</td><td>Brightwell Wire &amp; Cable (Mexico)</td><td>Environment</td><td>ISO 14001 certificate issued for the Monterrey site.</td></tr>" +
-            "<tr><td>3</td><td>Redmont Castings (USA)</td><td>Environment</td><td>State wastewater permit renewal pending; no violations reported.</td></tr>" +
+            "<tr><td>1</td><td>Tenzo Plastics (Malaysia)</td><td>Environment</td><td>Climate score lowered slightly.</td></tr>" +
+            "<tr><td>2</td><td>Brightwell Wire &amp; Cable (Mexico)</td><td>Environment</td><td>New environmental certification for its Monterrey site.</td></tr>" +
+            "<tr><td>3</td><td>Redmont Castings (USA)</td><td>Environment</td><td>Wastewater permit renewal pending; no violations.</td></tr>" +
             "<tr><td>4</td><td>Kaldera Precision (Malaysia)</td><td>Labor rights</td><td>" + FACTS + " " + EXPO + " " + RESP + "</td></tr>" +
-            "<tr><td>5</td><td>Sunfield Packaging (USA)</td><td>Governance</td><td>Conflict-minerals reporting template (CMRT) submitted for 2026.</td></tr></table>" +
-            "<p class='ibx-muted'>View the full portfolio dashboard or manage alert preferences in the SupplierWatch portal.</p>" },
+            "<tr><td>5</td><td>Sunfield Packaging (USA)</td><td>Governance</td><td>Conflict-minerals report submitted.</td></tr></table>" },
     { id: "E5", from: "Key Account Manager (Kaldera Precision)", addr: "account.manager@kalderaprecision.example", time: "7:14 AM",
-      subject: "Contract renewal: proposed terms for 2027\u20132028",
-      preview: "Ahead of the expiry of our current supply agreement on December 31, please find\u2026",
-      body: "<p>Dear Category Manager,</p><p>Ahead of the expiry of our current supply agreement on December 31, please find below our proposed terms for a two-year renewal (2027&ndash;2028) of the KD-700 motor assembly:</p>" +
-            "<ul><li>Unit price: <b>$38.40</b> (held flat)</li><li>Lead time: 6 weeks</li><li>Payment terms: Net 60</li><li>Annual volume: approx. 177,000 units</li></ul>" +
-            "<p>We greatly value our eight-year partnership with Orvane and look forward to your feedback by October 15.</p>" +
+      subject: "Contract renewal: proposed terms",
+      preview: "Our current supply agreement ends on December 31\u2026",
+      body: "<p>Dear Category Manager,</p><p>Our current supply agreement ends on December 31. Here are our proposed terms for a two-year renewal of the KD-700 motor assembly:</p>" +
+            "<ul><li>Price held flat at <b>$38.40</b> per unit</li><li>Same lead time and payment terms as today</li></ul>" +
+            "<p>We value our eight-year partnership with Orvane and look forward to your reply.</p>" +
             "<p>Best regards,<br>Key Account Manager<br>Kaldera Precision</p>" }
   ];
   var FORWARD_TO = ["My manager (Ellen Park)", "Sustainability team", "Legal & Compliance", "Supplier Quality (Sofia Martins)", "Inbound Logistics (Priya Nair)"];
@@ -242,7 +241,6 @@ window.SWS_INBOX = { build: function (qThis) {
     "<div class='ibx-hello'><div class='ibx-hello-h'>Reading pane</div>" +
     "<p style='margin:0'>Click a message on the left, or its <b>Open</b> button, to read it here.</p>" +
     "<ul><li>Open the messages that you think deserve your attention.</li>" +
-    "<li>An open message can be flagged or forwarded to a colleague.</li>" +
     "<li>Triage every message with the buttons under it in the list.</li></ul></div>";
 
   var app = document.createElement("div");
@@ -383,8 +381,8 @@ window.SWS_INBOX = { build: function (qThis) {
     var st = app.querySelector(".ibx-status");
     st.className = "ibx-status" + (all ? " ok" : "");
     st.innerHTML = all
-      ? "&#10003; All messages triaged. Open anything else you want to read, then answer the questions below the inbox."
-      : "Click <b>Open</b> to read a message. Triage every message as <b>Act today</b>, <b>This week</b>, or <b>No action</b> &mdash; you can do that from the list without opening it. " +
+      ? "&#10003; All messages triaged. Open anything else you want to read, then click the Next arrow."
+      : "Click <b>Open</b> to read a message. Triage every message as <b>Act today</b>, <b>This week</b>, or <b>No action</b>. You can do that from the list without opening it. " +
         (REQUIRE_TRIAGE ? "The Next button unlocks once all " + EMAILS.length + " are triaged." : "");
     setNext(all);
   }
@@ -418,20 +416,12 @@ window.SWS_INBOX = { build: function (qThis) {
   }
 
   function renderPane(m) {
-    var menu = "";
-    for (var j = 0; j < FORWARD_TO.length; j++) {
-      menu += "<button type='button' class='ibx-btn' data-fwd='" + j + "'>" + esc(FORWARD_TO[j]) + "</button>";
-    }
     pane.innerHTML =
       "<div class='ibx-h'>" + esc(m.subject) + "</div>" +
       "<div class='ibx-meta'><b>" + esc(m.from) + "</b>" + (m.addr ? " &lt;" + m.addr + "&gt;" : "") +
       (m.count ? " &middot; " + m.count + " messages" : "") + "<br>To: " + ME + " &middot; " + m.time + "</div>" +
       "<div class='ibx-actions'>" +
-        "<button type='button' class='ibx-btn" + (S.flag[m.id] ? " on" : "") + "' data-act='flag'>&#9873; " + (S.flag[m.id] ? "Flagged" : "Flag for follow-up") + "</button>" +
-        "<button type='button' class='ibx-btn' data-act='fwd'>&#8618; Forward&hellip;</button>" +
-        "<span class='ibx-note'>" + (S.fwd[m.id].length ? "&#10003; Forwarded to " + esc(S.fwd[m.id].join(", ")) : "") + "</span>" +
         "<span class='ibx-trilbl'>Triage:</span>" + chips(m.id) +
-        "<div class='ibx-menu'><span>Forward to:</span>" + menu + "</div>" +
       "</div>" +
       "<div class='ibx-body'>" + m.body + "</div>";
     pane.scrollTop = 0;
