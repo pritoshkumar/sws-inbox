@@ -15,6 +15,10 @@ window.SWS_INBOX = { build: function (qThis) {
      the story appears ONLY in E1 (the triage DV = ib_E1_triage = ib_ctrl_triage);
      the E2 colleague thread is dropped (4 messages; ib_E2_* stay empty) and digest
      line 4 carries a routine item for another supplier. Salience = Low unchanged.
+     v1.3.1 (2026-11-09): v1.3.0 dropped E2 only when Salience = High, so Low showed
+     5 messages and High 4. E2 is now dropped in BOTH conditions: every cell shows the
+     same 4 messages (E1, E3, E4, E5); ib_E2_* stay empty everywhere. The notes below
+     describing E2 are historical (v1.0.0 to v1.2.0).
 
      Condition comes from embedded data set in the Survey Flow randomizer:
        Salience = Low  -> the controversy appears only as line 4 of the ESG
@@ -146,7 +150,7 @@ window.SWS_INBOX = { build: function (qThis) {
       body: "<p>Dear Category Manager,</p><p>Our KD-700 agreement ends December 31. We propose a two-year renewal with the price held flat at <b>$38.40</b> per unit. We value our eight-year partnership.</p>" +
             "<p>Best regards,<br>Kaldera Precision</p>" }
   ];
-  if (HIGH) EMAILS.splice(1, 1);   // v1.3.0: drop the E2 colleague thread (repeated the story)
+  EMAILS.splice(1, 1);   // v1.3.1: drop the E2 colleague thread in BOTH conditions (4 messages everywhere)
   var FORWARD_TO =["My manager (Ellen Park)", "Sustainability team", "Legal & Compliance", "Supplier Quality (Sofia Martins)", "Inbound Logistics (Priya Nair)"];
   var TRIAGE = ["", "Act today", "This week", "No action"];   // codes 1, 2, 3
 
