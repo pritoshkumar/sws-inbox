@@ -11,6 +11,10 @@ window.SWS_INBOX = { build: function (qThis) {
      for how long. v1.1.0: Flag and Forward removed (ib_ctrl_flag / ib_ctrl_fwd
      stay in the data, always empty); shorter emails; first names in E2.
      v1.2.0: emails cut further (briefing = story only; thread forwards headline only).
+     v1.3.0 (Yanji, 2026-11-09): one controversy email only. When Salience = High
+     the story appears ONLY in E1 (the triage DV = ib_E1_triage = ib_ctrl_triage);
+     the E2 colleague thread is dropped (4 messages; ib_E2_* stay empty) and digest
+     line 4 carries a routine item for another supplier. Salience = Low unchanged.
 
      Condition comes from embedded data set in the Survey Flow randomizer:
        Salience = Low  -> the controversy appears only as line 4 of the ESG
@@ -63,7 +67,7 @@ window.SWS_INBOX = { build: function (qThis) {
   if (sal !== "High") sal = "Low";
   if (expo !== "Named") expo = "NotNamed";
   var HIGH = (sal === "High");
-  var CTRL = HIGH ? ["E1", "E2", "E4"] : ["E4"];   // messages that carry the controversy
+  var CTRL = HIGH ? ["E1"] : ["E4"];   // the one message that carries the controversy (v1.3.0)
 
   /* ---------- 2. Stimulus text (edit wording here) ---------- */
   // The misconduct facts, source, and Kaldera's response are identical wherever they appear.
@@ -133,7 +137,8 @@ window.SWS_INBOX = { build: function (qThis) {
             "<tr><td>1</td><td>Tenzo Plastics (Malaysia)</td><td>Environment</td><td>Climate score lowered slightly.</td></tr>" +
             "<tr><td>2</td><td>Brightwell Wire &amp; Cable (Mexico)</td><td>Environment</td><td>New environmental certification for its Monterrey site.</td></tr>" +
             "<tr><td>3</td><td>Redmont Castings (USA)</td><td>Environment</td><td>Wastewater permit renewal pending; no violations.</td></tr>" +
-            "<tr><td>4</td><td>Kaldera Precision (Malaysia)</td><td>Labor rights</td><td>" + FACTS + " " + EXPO + " " + RESP + "</td></tr>" +
+            (HIGH ? "<tr><td>4</td><td>Northgate Bearings (Vietnam)</td><td>Health &amp; safety</td><td>Annual site safety audit completed; no findings.</td></tr>"
+                  : "<tr><td>4</td><td>Kaldera Precision (Malaysia)</td><td>Labor rights</td><td>" + FACTS + " " + EXPO + " " + RESP + "</td></tr>") +
             "<tr><td>5</td><td>Sunfield Packaging (USA)</td><td>Governance</td><td>Conflict-minerals report submitted.</td></tr></table>" },
     { id: "E5", from: "Key Account Manager (Kaldera Precision)", addr: "account.manager@kalderaprecision.example", time: "7:14 AM",
       subject: "Contract renewal: proposed terms",
@@ -141,7 +146,8 @@ window.SWS_INBOX = { build: function (qThis) {
       body: "<p>Dear Category Manager,</p><p>Our KD-700 agreement ends December 31. We propose a two-year renewal with the price held flat at <b>$38.40</b> per unit. We value our eight-year partnership.</p>" +
             "<p>Best regards,<br>Kaldera Precision</p>" }
   ];
-  var FORWARD_TO = ["My manager (Ellen Park)", "Sustainability team", "Legal & Compliance", "Supplier Quality (Sofia Martins)", "Inbound Logistics (Priya Nair)"];
+  if (HIGH) EMAILS.splice(1, 1);   // v1.3.0: drop the E2 colleague thread (repeated the story)
+  var FORWARD_TO =["My manager (Ellen Park)", "Sustainability team", "Legal & Compliance", "Supplier Quality (Sofia Martins)", "Inbound Logistics (Priya Nair)"];
   var TRIAGE = ["", "Act today", "This week", "No action"];   // codes 1, 2, 3
 
   /* ---------- 3. Styles ---------- */
@@ -293,7 +299,7 @@ window.SWS_INBOX = { build: function (qThis) {
     return n;
   }
   // Summary across every message that carries the controversy
-  // (E4, plus E1 and E2 when Salience = High).
+  // (v1.3.0: E1 when Salience = High, E4 when Low).
   function ctrlAgg() {
     var a = { open: 0, dwell: 0, rank: "", tri: "", flag: 0, fwd: [] }, id;
     for (var j = 0; j < CTRL.length; j++) {
